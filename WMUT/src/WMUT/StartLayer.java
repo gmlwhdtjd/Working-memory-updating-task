@@ -23,6 +23,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
 
 public class StartLayer extends JPanel {
 	private static final long serialVersionUID = 646385095896724474L;
@@ -374,12 +375,9 @@ public class StartLayer extends JPanel {
 
 								@Override
 								public void run() {
-									mainFrame.setFullScreen(true);
-									
-									JPanel newLayer;
 									try {
-										newLayer = new TestLayer(wSet, subjectNumberTextField.getText(), settingValues);
-										mainFrame.setLayer(newLayer);
+										JFrame testFrame = new TestFrame(wSet, subjectNumberTextField.getText(), settingValues);
+										testFrame.setVisible(true);
 									} catch (Exception e) {
 										e.printStackTrace();
 									}

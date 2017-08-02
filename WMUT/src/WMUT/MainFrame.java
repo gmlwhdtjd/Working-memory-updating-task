@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.InputStream;
 import java.util.prefs.Preferences;
@@ -20,8 +18,9 @@ import javax.swing.SwingUtilities;
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 6928734264952432657L;
 	
-	String programVersion = "1.0.0";
+	String programVersion = "1.0.1";
 	
+	Font font;
 	Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
 			
 	/**
@@ -48,29 +47,7 @@ public class MainFrame extends JFrame {
 			}
 		});
 	}
-
-	/**
-	 * 풀스크린 관련 변수, 메서드
-	 */
-	private static GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
-	private Boolean isFullScreen;
-
-	public void setFullScreen(Boolean fullScreen) {
-		if (isFullScreen != fullScreen) {
-			if (fullScreen) {
-				device.setFullScreenWindow(this);
-				isFullScreen = true;
-			} else {
-				device.setFullScreenWindow(null);
-				isFullScreen = false;
-			}
-		}
-	}
-
-	public boolean getFullScreenStatus() {
-		return isFullScreen;
-	}
-
+	
 	/**
 	 * 싱글톤 관련 메서드
 	 */
@@ -81,8 +58,6 @@ public class MainFrame extends JFrame {
 	public static MainFrame getInstance() {
 		return Singleton.instance;
 	}
-
-	Font font;
 
 	/**
 	 * 메인 글래스 생성자
@@ -98,7 +73,6 @@ public class MainFrame extends JFrame {
 				setForeground(Color.WHITE);
 				setBackground(Color.WHITE);
 				setResizable(false);
-				isFullScreen = false;
 
 				try {
 					InputStream is = getClass().getResourceAsStream("/NanumGothic.ttc");

@@ -1,7 +1,8 @@
 package WMUT;
 
-import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -28,7 +29,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
 
-public class TestLayer extends JPanel {
+public class TestFrame extends JFrame {
 	private static final long serialVersionUID = -8198210695190555614L;
 
 	private Random random = new Random(System.currentTimeMillis());
@@ -326,14 +327,17 @@ public class TestLayer extends JPanel {
 
 	
 	/**
-	 * Create the panel.
+	 * Create the Frame.
 	 * settingValues must contain six values.
 	 * values order = studyTime, CTI_Time, encodingTime, recallTime, typingTime, numberOfRepeat.
 	 * @throws Exception from settingValues
 	 */
-	public TestLayer(WordSet wordSet, String subjectNumber, int settingValues[]) throws Exception {
-		Dimension frameSize = mainFrame.getSize();
-
+	public TestFrame(WordSet wordSet, String subjectNumber, int settingValues[]) throws Exception {
+		setUndecorated(true);
+		
+		GraphicsDevice device = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
+		device.setFullScreenWindow(this);
+		
 		// 변수 설정
 		wordSet_ = wordSet;
 		
@@ -351,78 +355,7 @@ public class TestLayer extends JPanel {
 			throw new Exception("settingValues must contain six values");
 		}	
 
-		// key 이벤트 등록
-		addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-
-				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-					if (!isStarting.getAndSet(true))
-						startingThread.start();
-
-					if (isStarted) {
-						if (!isCTI) {
-							encodingThread.interrupt();
-						}
-					}
-
-					if (isEnding) {
-						mainFrame.setFullScreen(false);
-						mainFrame.setLoadingLayer();
-
-						new SwingWorker<Void, Void>() {
-
-							@Override
-							protected Void doInBackground() throws Exception {
-								// 파일 출력
-								try {
-									BufferedWriter out;
-									
-									File resultsDir = new File("Results");
-									if (resultsDir.exists()) {
-										out = new BufferedWriter(new OutputStreamWriter(
-												new FileOutputStream("Results/TestResult_" + subjectNumber_ + ".csv"), "UTF8"));
-									}
-									else {
-										out = new BufferedWriter(new OutputStreamWriter(
-												new FileOutputStream("TestResult_" + subjectNumber_ + ".csv"), "UTF8"));
-									}
-
-									for (int i = 0; i < outputStrings.size(); i++) {
-										if (i == 0)
-											out.write("\uFEFF" + outputStrings.get(i));
-										else
-											out.write(outputStrings.get(i));
-
-										out.newLine();
-									}
-
-									out.close();
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
-								return null;
-							}
-
-							@Override
-							protected void done() {
-								SwingUtilities.invokeLater(new Runnable() {
-
-									@Override
-									public void run() {
-										JPanel newLayer = new StartLayer();
-
-										mainFrame.setLayer(newLayer);
-									}
-								});
-
-							}
-						}.execute();
-					}
-				}
-			}
-		});
-
+	
 		// output 세팅
 		outputStrings.add("피실험자 번호, " + subjectNumber_);
 		outputStrings.add("");
@@ -432,8 +365,11 @@ public class TestLayer extends JPanel {
 				+ ", " + numberOfRepeat);
 
 		// 레이아웃 세팅
-		setBackground(Color.WHITE);
-		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		JPanel contentPanel = (JPanel) getContentPane();
+		contentPanel.setBackground(Color.WHITE);
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+		contentPanel.setFocusable(true);
+		contentPanel.requestFocusInWindow();
 
 		// Transparent 16 x 16 pixel cursor image.
 		BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
@@ -442,7 +378,7 @@ public class TestLayer extends JPanel {
 		Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
 
 		// Set the blank cursor to the JFrame.
-		setCursor(blankCursor);
+		contentPanel.setCursor(blankCursor);
 
 		// 컨포넌트 생성
 		Component verticalGlue_1 = Box.createVerticalGlue();
@@ -456,7 +392,7 @@ public class TestLayer extends JPanel {
 		Component horizontalGlue_4 = Box.createHorizontalGlue();
 
 		for (int i = 0; i < Cards.length; i++) {
-			Cards[i] = new WordCard("", frameSize.width);
+			Cards[i] = new WordCard("", getSize().width);
 
 			WordCard curCard = Cards[i];
 			JTextField cardTextField = curCard.getTextField();
@@ -508,13 +444,86 @@ public class TestLayer extends JPanel {
 				}
 			});
 		}
+		
+		// key 이벤트 등록
+		contentPanel.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+
+				if (e.getKeyCode() == KeyEvent.VK_SPACE) {
+					if (!isStarting.getAndSet(true))
+						startingThread.start();
+
+					if (isStarted) {
+						if (!isCTI) {
+							encodingThread.interrupt();
+						}
+					}
+
+					if (isEnding) {
+
+						new SwingWorker<Void, Void>() {
+
+							@Override
+							protected Void doInBackground() throws Exception {
+								// 파일 출력
+								try {
+									BufferedWriter out;
+									
+									File resultsDir = new File("Results");
+									if (resultsDir.exists()) {
+										out = new BufferedWriter(new OutputStreamWriter(
+												new FileOutputStream("Results/TestResult_" + subjectNumber_ + ".csv"), "UTF8"));
+									}
+									else {
+										out = new BufferedWriter(new OutputStreamWriter(
+												new FileOutputStream("TestResult_" + subjectNumber_ + ".csv"), "UTF8"));
+									}
+
+									for (int i = 0; i < outputStrings.size(); i++) {
+										if (i == 0)
+											out.write("\uFEFF" + outputStrings.get(i));
+										else
+											out.write(outputStrings.get(i));
+
+										out.newLine();
+									}
+
+									out.close();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+								return null;
+							}
+
+							@Override
+							protected void done() {
+								SwingUtilities.invokeLater(new Runnable() {
+
+									@Override
+									public void run() {
+										dispose();
+										
+										JPanel newLayer = new StartLayer();
+										
+										mainFrame.setLayer(newLayer);
+									}
+								});
+
+							}
+						}.execute();
+					}
+				}
+			}
+		});
+
 		startLabel.setBackground(Color.WHITE);
 
-		startLabel.setFont(MainFrame.getInstance().font.deriveFont(Font.PLAIN, (int) (frameSize.width / 15)));
+		startLabel.setFont(MainFrame.getInstance().font.deriveFont(Font.PLAIN, (int) (getSize().width / 15)));
 
 		// 컴포넌트 추가
-		add(verticalGlue_1);
-		add(horizontalBox);
+		contentPanel.add(verticalGlue_1);
+		contentPanel.add(horizontalBox);
 
 		horizontalBox.add(horizontalGlue_1);
 		horizontalBox.add(Cards[0]);
@@ -525,7 +534,7 @@ public class TestLayer extends JPanel {
 		horizontalBox.add(Cards[2]);
 		horizontalBox.add(horizontalGlue_4);
 
-		add(verticalGlue_2);
+		contentPanel.add(verticalGlue_2);
 
 		// 시작 상태로 만듬
 		for (int i = 0; i < Cards.length; i++) {

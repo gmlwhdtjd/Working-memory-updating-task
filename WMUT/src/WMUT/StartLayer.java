@@ -24,6 +24,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.JTextField;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
+import java.text.Format;
 
 public class StartLayer extends JPanel {
 	private static final long serialVersionUID = 646385095896724474L;
@@ -31,12 +32,15 @@ public class StartLayer extends JPanel {
 	File wordSetFile;
 	
 	private JTextField subjectNumberTextField;
-	private JFormattedTextField numberOfRepeatTextField;
+	private JFormattedTextField updatingStepsTextField;
 	private JFormattedTextField studyTimeTextField;
 	private JFormattedTextField CTI_TimeTextField;
 	private JFormattedTextField encodingTimeTextField;
 	private JFormattedTextField recallTimeTextField;
 	private JFormattedTextField typingTimeTextField;
+	
+	private JFormattedTextField trialTextField;
+	private JFormattedTextField interTrialIntervalTextField;
 	
 	/**
 	 * Create the panel.
@@ -45,13 +49,15 @@ public class StartLayer extends JPanel {
 		MainFrame mainFrame = MainFrame.getInstance();
 		
 		//setting 값을 불러옴
+		int defaultTrial = mainFrame.prefs.getInt("trial", 60);
+		int defaultInterTrialInteval = mainFrame.prefs.getInt("interval", 1500);
 		int defaultStudyTime = mainFrame.prefs.getInt("study", 3000);
+		int defaultUpdatingSteps = mainFrame.prefs.getInt("steps", 10);
 		int defaultCTI_Time = mainFrame.prefs.getInt("CTI", 200);
 		int defaultEncodingTime = mainFrame.prefs.getInt("encoding", 5000);
 		int defaultRecallTime = mainFrame.prefs.getInt("recall", 4000);
-		int defaultTypingTime = mainFrame.prefs.getInt("typing", 5000);
-		int defaultNumberOfRepeat = mainFrame.prefs.getInt("repeat", 10);
-
+		int defaultTypingTime = mainFrame.prefs.getInt("typing", 5000);	
+		
 		setLayout(new BorderLayout(0, 0));
 
 		// 메뉴바
@@ -123,10 +129,10 @@ public class StartLayer extends JPanel {
 		// 메인 설정 Panel
 
 		JPanel centerPanel = new JPanel();
-		add(centerPanel, BorderLayout.CENTER);
+		add(centerPanel, BorderLayout.WEST);
 		GridBagLayout gbl_centerPanel = new GridBagLayout();
 		gbl_centerPanel.columnWidths = new int[] { 20, 100, 90, 140, 90, 20};
-		gbl_centerPanel.rowHeights = new int[] {30, 30, 30, 30, 30, 5, 30};
+		gbl_centerPanel.rowHeights = new int[] {30, 30, 30, 30, 30, 30, 5, 30};
 		centerPanel.setLayout(gbl_centerPanel);
 
 		JLabel subjectNumberLabel = new JLabel("피 실험자 번호 :");
@@ -158,6 +164,46 @@ public class StartLayer extends JPanel {
 		NumberFormat numberFormatter = NumberFormat.getNumberInstance();
 		numberFormatter.setParseIntegerOnly(true);
 		numberFormatter.setGroupingUsed(false);
+		
+		JLabel trialLabel = new JLabel("Trial :");
+		trialLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		GridBagConstraints gbc_trialLabel = new GridBagConstraints();
+		gbc_trialLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_trialLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_trialLabel.gridx = 1;
+		gbc_trialLabel.gridy = 2;
+		centerPanel.add(trialLabel, gbc_trialLabel);
+		
+		trialTextField = new JFormattedTextField((Format) null);
+		trialTextField.setHorizontalAlignment(SwingConstants.RIGHT);
+		trialTextField.setValue(new Integer(defaultTrial));
+		
+		GridBagConstraints gbc_trialTextField = new GridBagConstraints();
+		gbc_trialTextField.insets = new Insets(0, 0, 5, 5);
+		gbc_trialTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_trialTextField.gridx = 2;
+		gbc_trialTextField.gridy = 2;
+		centerPanel.add(trialTextField, gbc_trialTextField);
+		
+		JLabel interTrialIntervalLabel = new JLabel("Inter Trial Interval :");
+		interTrialIntervalLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		GridBagConstraints gbc_interTrialIntervalLabel = new GridBagConstraints();
+		gbc_interTrialIntervalLabel.anchor = GridBagConstraints.EAST;
+		gbc_interTrialIntervalLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_interTrialIntervalLabel.gridx = 3;
+		gbc_interTrialIntervalLabel.gridy = 2;
+		centerPanel.add(interTrialIntervalLabel, gbc_interTrialIntervalLabel);
+		
+		interTrialIntervalTextField = new JFormattedTextField((Format) null);
+		interTrialIntervalTextField.setHorizontalAlignment(SwingConstants.RIGHT);
+		interTrialIntervalTextField.setValue(new Integer(defaultInterTrialInteval));
+		
+		GridBagConstraints gbc_interTrialIntervalTextField = new GridBagConstraints();
+		gbc_interTrialIntervalTextField.insets = new Insets(0, 0, 5, 5);
+		gbc_interTrialIntervalTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_interTrialIntervalTextField.gridx = 4;
+		gbc_interTrialIntervalTextField.gridy = 2;
+		centerPanel.add(interTrialIntervalTextField, gbc_interTrialIntervalTextField);
 
 		JLabel studyTimeLabel = new JLabel("Study Time :");
 		studyTimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -165,7 +211,7 @@ public class StartLayer extends JPanel {
 		gbc_studyTimeLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_studyTimeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_studyTimeLabel.gridx = 1;
-		gbc_studyTimeLabel.gridy = 2;
+		gbc_studyTimeLabel.gridy = 3;
 		centerPanel.add(studyTimeLabel, gbc_studyTimeLabel);
 
 		studyTimeTextField = new JFormattedTextField(numberFormatter);
@@ -176,27 +222,28 @@ public class StartLayer extends JPanel {
 		gbc_studyTimeTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_studyTimeTextField.insets = new Insets(0, 0, 5, 5);
 		gbc_studyTimeTextField.gridx = 2;
-		gbc_studyTimeTextField.gridy = 2;
+		gbc_studyTimeTextField.gridy = 3;
 		centerPanel.add(studyTimeTextField, gbc_studyTimeTextField);
 
-		JLabel numberOfRepeatLabel = new JLabel("반복 횟수 :");
-		numberOfRepeatLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-		GridBagConstraints gbc_numberOfRepeatLabel = new GridBagConstraints();
-		gbc_numberOfRepeatLabel.fill = GridBagConstraints.HORIZONTAL;
-		gbc_numberOfRepeatLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_numberOfRepeatLabel.gridx = 3;
-		gbc_numberOfRepeatLabel.gridy = 2;
-		centerPanel.add(numberOfRepeatLabel, gbc_numberOfRepeatLabel);
+		JLabel updatingStepsLabel = new JLabel("Updating Steps :");
+		updatingStepsLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+		GridBagConstraints gbc_updatingStepsLabel = new GridBagConstraints();
+		gbc_updatingStepsLabel.fill = GridBagConstraints.HORIZONTAL;
+		gbc_updatingStepsLabel.insets = new Insets(0, 0, 5, 5);
+		gbc_updatingStepsLabel.gridx = 3;
+		gbc_updatingStepsLabel.gridy = 3;
+		centerPanel.add(updatingStepsLabel, gbc_updatingStepsLabel);
 
-		numberOfRepeatTextField = new JFormattedTextField(numberFormatter);
-		numberOfRepeatTextField.setHorizontalAlignment(SwingConstants.RIGHT);
-		numberOfRepeatTextField.setValue(defaultNumberOfRepeat);
-		GridBagConstraints gbc_numberOfRepeatTextField = new GridBagConstraints();
-		gbc_numberOfRepeatTextField.fill = GridBagConstraints.HORIZONTAL;
-		gbc_numberOfRepeatTextField.insets = new Insets(0, 0, 5, 5);
-		gbc_numberOfRepeatTextField.gridx = 4;
-		gbc_numberOfRepeatTextField.gridy = 2;
-		centerPanel.add(numberOfRepeatTextField, gbc_numberOfRepeatTextField);
+		updatingStepsTextField = new JFormattedTextField(numberFormatter);
+		updatingStepsTextField.setHorizontalAlignment(SwingConstants.RIGHT);
+		updatingStepsTextField.setValue(defaultUpdatingSteps);
+		
+		GridBagConstraints gbc_updatingStepsTextField = new GridBagConstraints();
+		gbc_updatingStepsTextField.fill = GridBagConstraints.HORIZONTAL;
+		gbc_updatingStepsTextField.insets = new Insets(0, 0, 5, 5);
+		gbc_updatingStepsTextField.gridx = 4;
+		gbc_updatingStepsTextField.gridy = 3;
+		centerPanel.add(updatingStepsTextField, gbc_updatingStepsTextField);
 
 		JLabel CTI_TimeLabel = new JLabel("CTI Time :");
 		CTI_TimeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -204,7 +251,7 @@ public class StartLayer extends JPanel {
 		gbc_CTI_TimeLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_CTI_TimeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_CTI_TimeLabel.gridx = 1;
-		gbc_CTI_TimeLabel.gridy = 3;
+		gbc_CTI_TimeLabel.gridy = 4;
 		centerPanel.add(CTI_TimeLabel, gbc_CTI_TimeLabel);
 
 		CTI_TimeTextField = new JFormattedTextField(numberFormatter);
@@ -214,7 +261,7 @@ public class StartLayer extends JPanel {
 		gbc_CTI_TimeTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_CTI_TimeTextField.insets = new Insets(0, 0, 5, 5);
 		gbc_CTI_TimeTextField.gridx = 2;
-		gbc_CTI_TimeTextField.gridy = 3;
+		gbc_CTI_TimeTextField.gridy = 4;
 		centerPanel.add(CTI_TimeTextField, gbc_CTI_TimeTextField);
 
 		JLabel encodingTimeLabel = new JLabel("Encoding Time :");
@@ -223,7 +270,7 @@ public class StartLayer extends JPanel {
 		gbc_encodingTimeLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_encodingTimeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_encodingTimeLabel.gridx = 3;
-		gbc_encodingTimeLabel.gridy = 3;
+		gbc_encodingTimeLabel.gridy = 4;
 		centerPanel.add(encodingTimeLabel, gbc_encodingTimeLabel);
 
 		encodingTimeTextField = new JFormattedTextField(numberFormatter);
@@ -234,7 +281,7 @@ public class StartLayer extends JPanel {
 		gbc_encodingTimeTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_encodingTimeTextField.insets = new Insets(0, 0, 5, 5);
 		gbc_encodingTimeTextField.gridx = 4;
-		gbc_encodingTimeTextField.gridy = 3;
+		gbc_encodingTimeTextField.gridy = 4;
 		centerPanel.add(encodingTimeTextField, gbc_encodingTimeTextField);
 
 		JLabel recallTimeLabel = new JLabel("Recall Time :");
@@ -243,7 +290,7 @@ public class StartLayer extends JPanel {
 		gbc_recallTimeLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_recallTimeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_recallTimeLabel.gridx = 1;
-		gbc_recallTimeLabel.gridy = 4;
+		gbc_recallTimeLabel.gridy = 5;
 		centerPanel.add(recallTimeLabel, gbc_recallTimeLabel);
 
 		recallTimeTextField = new JFormattedTextField(numberFormatter);
@@ -253,7 +300,7 @@ public class StartLayer extends JPanel {
 		gbc_recallTimeTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_recallTimeTextField.insets = new Insets(0, 0, 5, 5);
 		gbc_recallTimeTextField.gridx = 2;
-		gbc_recallTimeTextField.gridy = 4;
+		gbc_recallTimeTextField.gridy = 5;
 		centerPanel.add(recallTimeTextField, gbc_recallTimeTextField);
 
 		JLabel typingTimeLabel = new JLabel("Typing Time :");
@@ -262,7 +309,7 @@ public class StartLayer extends JPanel {
 		gbc_typingTimeLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_typingTimeLabel.insets = new Insets(0, 0, 5, 5);
 		gbc_typingTimeLabel.gridx = 3;
-		gbc_typingTimeLabel.gridy = 4;
+		gbc_typingTimeLabel.gridy = 5;
 		centerPanel.add(typingTimeLabel, gbc_typingTimeLabel);
 
 		typingTimeTextField = new JFormattedTextField(numberFormatter);
@@ -272,7 +319,7 @@ public class StartLayer extends JPanel {
 		gbc_typingTimeTextField.insets = new Insets(0, 0, 5, 5);
 		gbc_typingTimeTextField.fill = GridBagConstraints.HORIZONTAL;
 		gbc_typingTimeTextField.gridx = 4;
-		gbc_typingTimeTextField.gridy = 4;
+		gbc_typingTimeTextField.gridy = 5;
 		centerPanel.add(typingTimeTextField, gbc_typingTimeTextField);
 
 		JLabel wordSetLabel = new JLabel("Word Set :");
@@ -280,7 +327,7 @@ public class StartLayer extends JPanel {
 		gbc_wordSetLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_wordSetLabel.insets = new Insets(0, 0, 0, 5);
 		gbc_wordSetLabel.gridx = 1;
-		gbc_wordSetLabel.gridy = 6;
+		gbc_wordSetLabel.gridy = 7;
 		centerPanel.add(wordSetLabel, gbc_wordSetLabel);
 		wordSetLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 
@@ -291,7 +338,7 @@ public class StartLayer extends JPanel {
 		gbc_fileNameLabel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_fileNameLabel.insets = new Insets(0, 0, 0, 5);
 		gbc_fileNameLabel.gridx = 2;
-		gbc_fileNameLabel.gridy = 6;
+		gbc_fileNameLabel.gridy = 7;
 		centerPanel.add(fileNameLabel, gbc_fileNameLabel);
 
 		JButton wordSetOpenButton = new JButton("열기");
@@ -299,7 +346,7 @@ public class StartLayer extends JPanel {
 		gbc_wordSetOpenButton.insets = new Insets(0, 0, 0, 5);
 		gbc_wordSetOpenButton.fill = GridBagConstraints.HORIZONTAL;
 		gbc_wordSetOpenButton.gridx = 4;
-		gbc_wordSetOpenButton.gridy = 6;
+		gbc_wordSetOpenButton.gridy = 7;
 		centerPanel.add(wordSetOpenButton, gbc_wordSetOpenButton);
 
 		wordSetOpenButton.addActionListener(new ActionListener() {
@@ -337,24 +384,29 @@ public class StartLayer extends JPanel {
 					WordSet wSet;
 					boolean loadingSoccess;
 					
-					int settingValues[] = new int[6];
+					int settingValues[] = new int[8];
 
 					@Override
 					protected Void doInBackground() throws Exception {
 						
-						settingValues[0] = ((Number) studyTimeTextField.getValue()).intValue();
-						settingValues[1] = ((Number) CTI_TimeTextField.getValue()).intValue();
-						settingValues[2] = ((Number) encodingTimeTextField.getValue()).intValue();
-						settingValues[3] = ((Number) recallTimeTextField.getValue()).intValue();
-						settingValues[4] = ((Number) typingTimeTextField.getValue()).intValue();
-						settingValues[5] = ((Number) numberOfRepeatTextField.getValue()).intValue();
+						settingValues[0] = ((Number) trialTextField.getValue()).intValue();
+						settingValues[1] = ((Number) interTrialIntervalTextField.getValue()).intValue();
+						settingValues[2] = ((Number) studyTimeTextField.getValue()).intValue();
+						settingValues[3] = ((Number) updatingStepsTextField.getValue()).intValue();
+						settingValues[4] = ((Number) CTI_TimeTextField.getValue()).intValue();
+						settingValues[5] = ((Number) encodingTimeTextField.getValue()).intValue();
+						settingValues[6] = ((Number) recallTimeTextField.getValue()).intValue();
+						settingValues[7] = ((Number) typingTimeTextField.getValue()).intValue();
 						
-						mainFrame.prefs.putInt("study", settingValues[0]);
-						mainFrame.prefs.putInt("CTI", settingValues[1]);
-						mainFrame.prefs.putInt("encoding", settingValues[2]);
-						mainFrame.prefs.putInt("recall", settingValues[3]);
-						mainFrame.prefs.putInt("typing", settingValues[4]);
-						mainFrame.prefs.putInt("repeat", settingValues[5]);
+						mainFrame.prefs.putInt("trial", settingValues[0]);
+						mainFrame.prefs.putInt("interval", settingValues[1]);
+						mainFrame.prefs.putInt("study", settingValues[2]);
+						mainFrame.prefs.putInt("steps", settingValues[3]);
+						mainFrame.prefs.putInt("CTI", settingValues[4]);
+						mainFrame.prefs.putInt("encoding", settingValues[5]);
+						mainFrame.prefs.putInt("recall", settingValues[6]);
+						mainFrame.prefs.putInt("typing", settingValues[7]);
+						
 						
 						wSet = new WordSet();
 						loadingSoccess = wSet.loadingFromFile(wordSetFile);

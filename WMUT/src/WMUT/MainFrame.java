@@ -18,7 +18,7 @@ import javax.swing.SwingUtilities;
 public class MainFrame extends JFrame {
 	private static final long serialVersionUID = 6928734264952432657L;
 	
-	String programVersion = "1.0.1";
+	String programVersion = "1.1.0";
 	
 	Font font;
 	Preferences prefs = Preferences.userNodeForPackage(MainFrame.class);
@@ -69,7 +69,7 @@ public class MainFrame extends JFrame {
 			public void run() {
 				setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 				setTitle("Working memory updating task -" + programVersion);
-				setPreferredSize(new Dimension(460, 320));
+				setPreferredSize(new Dimension(460, 350));
 				setForeground(Color.WHITE);
 				setBackground(Color.WHITE);
 				setResizable(false);

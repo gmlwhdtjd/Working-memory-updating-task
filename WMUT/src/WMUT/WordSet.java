@@ -60,4 +60,10 @@ public class WordSet {
 			}
 		}
 	}
+	
+	public void cardNumberReset() {
+		for (int i = 0; i < words.size(); i++) {
+			words.get(i).referenceNumber = -1;
+		}
+	}
 }

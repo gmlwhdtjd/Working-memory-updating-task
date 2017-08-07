@@ -139,7 +139,7 @@ public class TestFrame extends JFrame {
 
 				reactionTime_Study = System.currentTimeMillis() - reactionTime_Study;
 
-				outputStrings.get(0).add(""+ i + ", " + lastEncodingWords[0] + ", " + lastEncodingWords[1] + ", "+ lastEncodingWords[2] + ", "+ reactionTime_Study);
+				outputStrings.get(0).add(""+ i + "," + lastEncodingWords[0] + "," + lastEncodingWords[1] + ","+ lastEncodingWords[2] + ","+ reactionTime_Study);
 
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override
@@ -214,7 +214,7 @@ public class TestFrame extends JFrame {
 						position = "오른쪽";
 						break;
 					}
-					outputStrings.get(1).add("" + i + ", " + j + ", " + position + ", " + encodingWord + ", " + reactionTime_Encoding);
+					outputStrings.get(1).add("" + i + "," + j + "," + position + "," + encodingWord + "," + reactionTime_Encoding);
 				}
 				// END Encoding ---------------------------------------------
 				isStarted = false;
@@ -255,6 +255,7 @@ public class TestFrame extends JFrame {
 					int currentCardIndex = cardOrder[j-1];
 					WordCard currnetCard = cards[currentCardIndex];
 					boolean isTyped = false;
+					String correction = "";
 
 					SwingUtilities.invokeLater(new Runnable() {
 
@@ -310,10 +311,11 @@ public class TestFrame extends JFrame {
 						position = "오른쪽";
 						break;
 					}
-					outputStrings.get(2).add("" + i + ", " + j + ", " + position + ", " + lastEncodingWords[currentCardIndex]
-							+ ", " + testerAnswer + ", " + reactionTime_recall + ", " + reactionTime_typing);
+					if(stringTest(lastEncodingWords[currentCardIndex], testerAnswer))
+						correction = ",correct";
+					outputStrings.get(2).add("" + i + "," + j + "," + position + "," + lastEncodingWords[currentCardIndex]
+							+ "," + testerAnswer + "," + reactionTime_recall + "," + reactionTime_typing + correction);
 				}
-				
 				isRecalling = false;
 				// END Recalling --------------------------------------------
 				
@@ -338,7 +340,6 @@ public class TestFrame extends JFrame {
 				}
 				// END Inter Trial Interval ------------------------------
 			}
-			
 			endingThread.start();
 		}
 	};
@@ -352,6 +353,7 @@ public class TestFrame extends JFrame {
 					for (int i = 0; i < cards.length; i++) {
 						cards[i].setVisible(false);
 					}
+					outputStrings.get(2).add(",,,,,,총 정답수,=COUNTA(H10:H"+(trial*3+9)+")");
 					
 					startLabel.setText("Thank you for participation");
 					startLabel.setVisible(true);
@@ -396,18 +398,18 @@ public class TestFrame extends JFrame {
 		// output 세팅
 		for (int i = 0; i < 3; i++) {
 			outputStrings.add(new Vector<String>());
-			outputStrings.get(i).add("피실험자 번호, " + subjectNumber_);
+			outputStrings.get(i).add("피실험자 번호," + subjectNumber_);
 			outputStrings.get(i).add("");
 			outputStrings.get(i).add("설정값");
-			outputStrings.get(i).add("Trial, Inter Trial Interval, Study Time, Updating Steps");
-			outputStrings.get(i).add("" +  trial + ", " +  interTrialInterval + ", " +  studyTime + ", " +  updatingSteps);
-			outputStrings.get(i).add("CTI Time, Encoding Time, Recall Time, Typing Time");
-			outputStrings.get(i).add("" +  CTI_Time + ", " +  encodingTime + ", " +  recallTime + ", " +  typingTime);
+			outputStrings.get(i).add("Trial,Inter Trial Interval,Study Time,Updating Steps");
+			outputStrings.get(i).add("" +  trial + "," +  interTrialInterval + "," +  studyTime + "," +  updatingSteps);
+			outputStrings.get(i).add("CTI Time,Encoding Time,Recall Time,Typing Time");
+			outputStrings.get(i).add("" +  CTI_Time + "," +  encodingTime + "," +  recallTime + "," +  typingTime);
 			outputStrings.get(i).add("");
 		}
-		outputStrings.get(0).add("Trial, 왼쪽, 중앙, 오른쪽, Study Time");
-		outputStrings.get(1).add("Trial, Step, 단어 위치, 단어, Encoding Time");
-		outputStrings.get(2).add("Trial, Test 순서, 단어 위치, 정답, 답안, Recall Time, Typing Time");
+		outputStrings.get(0).add("Trial,왼쪽,중앙,오른쪽,Study Time");
+		outputStrings.get(1).add("Trial,Step,단어 위치,단어,Encoding Time");
+		outputStrings.get(2).add("Trial,Test 순서,단어 위치,정답,답안,Recall Time,Typing Time,정답여부");
 		
 		// 레이아웃 세팅
  		JPanel contentPanel = (JPanel) getContentPane();
@@ -590,5 +592,20 @@ public class TestFrame extends JFrame {
 		}
 
 		startLabel.setVisible(true);
+	}
+	
+	/**
+	 * string을 직접 byte별로 비교함 -> 한글등 유니코드 문자비교용
+	 */
+	private boolean stringTest(String str1, String str2) {
+		if (str1.getBytes().length != str2.getBytes().length)
+			return false;
+		
+		for (int i = 0; i < str1.getBytes().length; i++) {
+			if (str1.getBytes()[i] != str2.getBytes()[i]) 
+				return false;
+		}
+
+		return true;
 	}
 }
